@@ -10,7 +10,7 @@
 }:
 
 let
-  version = "1.0.16";
+  version = "1.0.132";
   
   # Map Nix system to OpenCode platform naming
   platformMap = {
@@ -34,11 +34,14 @@ let
 
   # Platform-specific hashes for the pre-built binaries
   hashes = {
-    "x86_64-linux" = "sha256-XPxVEEOXFYB3SK9bbqDN0XArIMgOXhll+O1d8kBhLkg=";
-    "aarch64-linux" = "sha256-QcjOxSE4OF+I25UfGerB2x+wsHabF9IJTAEIPuUWmIA=";
-    "x86_64-darwin" = "sha256-Ql1gg2PRKi/5FeyEsD4nY2PaU/fLAcc+hC6epzrqrH8=";
-    "aarch64-darwin" = "sha256-q4ful7HqX+GLDiP3rK2RZkfqzIqqjd0iY8YV287mjxY=";
+    "x86_64-linux" = "sha256-QNaXuAie3oXtA+NavN5aqwCnDARAAXQk0FmgyN6FEr8=";
+    "aarch64-linux" = "sha256-zoQ9PBvPkMSmPMbF5IWSkaKzYmKWjhJu/zkGY6E/HYM=";
+    "x86_64-darwin" = "sha256-NaT9dbDurKHuzAKI8nekjETe5LQTnFlBJI+XvAsrPhs=";
+    "aarch64-darwin" = "sha256-gUIb0O/P8woPCNTpnbA5uKH8vVOC+wnVu0JLflH1aZI=";
   };
+
+  # File extension varies by platform (tar.gz for Linux, zip for Darwin)
+  fileExt = if stdenvNoCC.hostPlatform.isLinux then "tar.gz" else "zip";
 
   system = stdenvNoCC.hostPlatform.system;
   platformInfo = platformMap.${system} or (throw "Unsupported system: ${system}");
@@ -50,14 +53,14 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/sst/opencode/releases/download/v${version}/opencode-${platformInfo.platform}-${platformInfo.arch}.zip";
+    url = "https://github.com/sst/opencode/releases/download/v${version}/opencode-${platformInfo.platform}-${platformInfo.arch}.${fileExt}";
     inherit hash;
   };
 
-  nativeBuildInputs = [
-    unzip
-  ] ++ lib.optionals stdenv.hostPlatform.isLinux [
+  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [
     autoPatchelfHook
+  ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
+    unzip
   ];
 
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
@@ -67,7 +70,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   unpackPhase = ''
     runHook preUnpack
     
-    unzip -q $src
+    ${if stdenvNoCC.hostPlatform.isLinux then ''
+      tar -xzf $src
+    '' else ''
+      unzip -q $src
+    ''}
     
     runHook postUnpack
   '';
@@ -108,9 +115,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     ];
     maintainers = [
       {
-        email = "sebastien.pahl@gmail.com";
-        github = "spahl";
-        name = "Sebastien Pahl";
+        email = "jorge.alv.suarez@gmail.com";
+        github = "PJalv";
+        name = "Jorge Suarez";
       }
     ];
     mainProgram = "opencode";
