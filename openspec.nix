@@ -20,13 +20,13 @@ let
 in
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "openspec";
-  version = "0.17.0";
+  version = "0.17.2";
   
   src = fetchFromGitHub {
     owner = "Fission-AI";
     repo = "OpenSpec";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-xIeteFUBvFmOWqeIHsBoQok0lgut6mXJhKGo0ZZvTGs=";
+    hash = "sha256-BhbKhcJgM1WlePx9P6/9owZLosFmjL36cgKkZiBIqQM=";
   };
 
   node_modules = stdenvNoCC.mkDerivation {
@@ -73,7 +73,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
     outputHash =
       {
-        x86_64-linux = "sha256-4A0e9StCfrFFU2VmMM71x0u50MWUQGP3obBpP66gihQ=";
+        x86_64-linux = "sha256-AWnj+EbL8oCCCHJRCwGbcWmW6AJ/svc9rB693aN70v0=";
       }
       .${stdenvNoCC.hostPlatform.system};
     outputHashAlgo = "sha256";
