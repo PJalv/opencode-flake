@@ -18,22 +18,76 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     hash = "sha256-pax2yMAxqJWM3RYTyxer8ZJwjyl2MgZ3+RfwZXvUDT0=";
   };
 
+  node_modules = stdenvNoCC.mkDerivation {
+    pname = "opencode-google-antigravity-auth-node_modules";
+    inherit (finalAttrs) version src;
+
+    impureEnvVars = lib.fetchers.proxyImpureEnvVars ++ [
+      "GIT_PROXY_COMMAND"
+      "SOCKS_SERVER"
+    ];
+
+    nativeBuildInputs = [
+      bun
+      writableTmpDirAsHomeHook
+    ];
+
+    dontConfigure = true;
+
+    buildPhase = ''
+      runHook preBuild
+
+      export BUN_INSTALL_CACHE_DIR=$(mktemp -d)
+
+      # Install dependencies
+      bun install \
+        --force \
+        --ignore-scripts \
+        --no-progress
+
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+
+      mkdir -p $out/node_modules
+      cp -R ./node_modules $out
+
+      runHook postInstall
+    '';
+
+    # Required else we get errors that our fixed-output derivation references store paths
+    dontFixup = true;
+
+    outputHash =
+      {
+        x86_64-linux = "sha256-pUwNpbWhLTWhxqGw3mDnhLc6NG2NWjcNbH5ujseGOdE=";
+      }
+      .${stdenvNoCC.hostPlatform.system};
+    outputHashAlgo = "sha256";
+    outputHashMode = "recursive";
+  };
+
   nativeBuildInputs = [
     bun
     writableTmpDirAsHomeHook
   ];
 
-  dontConfigure = true;
+  configurePhase = ''
+    runHook preConfigure
+
+    cp -R ${finalAttrs.node_modules}/node_modules .
+
+    runHook postConfigure
+  '';
 
   buildPhase = ''
     runHook preBuild
 
-    # FIX: Manually set HOME to a writable temp dir.
-    # This prevents 'bun' from crashing when trying to access /homeless-shelter
-    export HOME="$TMPDIR"
-
-    # Copy the plugin files to the output directory
-    mkdir -p $out
+    # Since this is a plugin, just copy the source files
+    # No need to build TypeScript since OpenCode loads TypeScript directly
+    mkdir -p $out/lib
 
     runHook postBuild
   '';
@@ -41,10 +95,12 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    # Install the plugin files
-    cp index.ts $out/
-    cp -R src $out/
-    cp package.json $out/
+    # Install the plugin files and node_modules
+    mkdir -p $out/lib/node_modules/opencode-google-antigravity-auth
+    cp index.ts $out/lib/node_modules/opencode-google-antigravity-auth/
+    cp package.json $out/lib/node_modules/opencode-google-antigravity-auth/
+    cp -R src $out/lib/node_modules/opencode-google-antigravity-auth/
+    cp -R ./node_modules $out/lib/
 
     runHook postInstall
   '';
