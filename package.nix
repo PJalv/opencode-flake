@@ -8,6 +8,7 @@
   nix-update-script,
   testers,
   makeWrapper,
+  writeShellScript,
 }:
 
 let
@@ -84,18 +85,26 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   dontStrip = true;
 
-  installPhase = ''
-    runHook preInstall
+   installPhase = ''
+     runHook preInstall
 
-    install -Dm755 opencode $out/bin/opencode.real
+     install -Dm755 opencode $out/bin/opencode.real
 
-    # Create a wrapper that enables OpenCode to use npm plugins
-    makeWrapper $out/bin/opencode.real $out/bin/opencode \
-      --set XDG_CACHE_HOME "''${XDG_CACHE_HOME:=$HOME/.cache}" \
-      --set OPENCODE_USE_NPM_PLUGINS "1"
+     # Create a shell wrapper script that sets up proper environment
+     # This prevents the /homeless-shelter error from the hardcoded path in the binary
+     cat > $out/bin/opencode << 'WRAPPER'
+#!/bin/sh
+export HOME="''${HOME:-$HOME}"
+export XDG_CACHE_HOME="''${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_DATA_HOME="''${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CONFIG_HOME="''${XDG_CONFIG_HOME:-$HOME/.config}"
+export OPENCODE_USE_NPM_PLUGINS=1
+exec $0.real "$@"
+WRAPPER
+     chmod +x $out/bin/opencode
 
-    runHook postInstall
-  '';
+     runHook postInstall
+   '';
 
   passthru = {
     updateScript = nix-update-script { };
