@@ -18,8 +18,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     hash = "sha256-pax2yMAxqJWM3RYTyxer8ZJwjyl2MgZ3+RfwZXvUDT0=";
   };
 
-  nativeBuildInputs = [ bun
-writableTmpDirAsHomeHook
+  nativeBuildInputs = [
+    bun
+    writableTmpDirAsHomeHook
   ];
 
   dontConfigure = true;
@@ -27,8 +28,11 @@ writableTmpDirAsHomeHook
   buildPhase = ''
     runHook preBuild
 
+    # FIX: Manually set HOME to a writable temp dir.
+    # This prevents 'bun' from crashing when trying to access /homeless-shelter
+    export HOME="$TMPDIR"
+
     # Copy the plugin files to the output directory
-    # OpenCode plugins are TypeScript-based and loaded directly
     mkdir -p $out
 
     runHook postBuild
