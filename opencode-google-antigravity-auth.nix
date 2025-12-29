@@ -3,6 +3,7 @@
   stdenvNoCC,
   bun,
   fetchFromGitHub,
+  writableTmpDirAsHomeHook,
   nix-update-script,
 }:
 
@@ -17,7 +18,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     hash = "sha256-pax2yMAxqJWM3RYTyxer8ZJwjyl2MgZ3+RfwZXvUDT0=";
   };
 
-  nativeBuildInputs = [ bun ];
+  nativeBuildInputs = [ bun
+writableTmpDirAsHomeHook
+  ];
 
   dontConfigure = true;
 
