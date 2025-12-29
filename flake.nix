@@ -31,6 +31,7 @@
           opencode = pkgs.callPackage ./package.nix { };
           openspec = pkgs.callPackage ./openspec.nix { };
           opencode-nvim = pkgs.callPackage ./opencode-nvim.nix { };
+          opencode-google-antigravity-auth = pkgs.callPackage ./opencode-google-antigravity-auth.nix { };
           default = self.packages.${system}.opencode;
         }
       );
@@ -46,28 +47,30 @@
         }
       );
 
-      devShells = forEachSystem (
-        { pkgs, system }:
-        {
-          default = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              self.packages.${system}.opencode
-              self.packages.${system}.openspec
-              self.packages.${system}.opencode-nvim
-            ];
-          };
-        }
-      );
+       devShells = forEachSystem (
+         { pkgs, system }:
+         {
+           default = pkgs.mkShell {
+             buildInputs = with pkgs; [
+               self.packages.${system}.opencode
+               self.packages.${system}.openspec
+               self.packages.${system}.opencode-nvim
+               self.packages.${system}.opencode-google-antigravity-auth
+             ];
+           };
+         }
+       );
 
-      checks = forEachSystem (
-        { pkgs, system }:
-        {
-          opencode = self.packages.${system}.opencode;
-          opencode-version = self.packages.${system}.opencode.passthru.tests.version;
-          openspec = self.packages.${system}.openspec;
-          openspec-version = self.packages.${system}.openspec.passthru.tests.version;
-          opencode-nvim = self.packages.${system}.opencode-nvim;
-        }
-      );
+       checks = forEachSystem (
+         { pkgs, system }:
+         {
+           opencode = self.packages.${system}.opencode;
+           opencode-version = self.packages.${system}.opencode.passthru.tests.version;
+           openspec = self.packages.${system}.openspec;
+           openspec-version = self.packages.${system}.openspec.passthru.tests.version;
+           opencode-nvim = self.packages.${system}.opencode-nvim;
+           opencode-google-antigravity-auth = self.packages.${system}.opencode-google-antigravity-auth;
+         }
+       );
     };
 }
