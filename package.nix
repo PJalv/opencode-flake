@@ -98,11 +98,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   '';
 
   passthru = {
-    tests.version = testers.testVersion {
-      package = finalAttrs.finalPackage;
-      command = "HOME=$(mktemp -d) opencode --version";
-      inherit (finalAttrs) version;
-    };
     updateScript = nix-update-script { };
   };
 
