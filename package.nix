@@ -7,6 +7,7 @@
   stdenv,
   nix-update-script,
   testers,
+  makeWrapper,
 }:
 
 let
@@ -61,6 +62,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     autoPatchelfHook
   ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
     unzip
+  ] ++ [
+    makeWrapper
   ];
 
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
@@ -84,7 +87,12 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    install -Dm755 opencode $out/bin/opencode
+    install -Dm755 opencode $out/bin/opencode.real
+
+    # Create a wrapper that enables OpenCode to use npm plugins
+    makeWrapper $out/bin/opencode.real $out/bin/opencode \
+      --set XDG_CACHE_HOME "''${XDG_CACHE_HOME:=$HOME/.cache}" \
+      --set OPENCODE_USE_NPM_PLUGINS "1"
 
     runHook postInstall
   '';
