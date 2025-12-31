@@ -75,12 +75,19 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     declare -A HASHES
     
     for platform in "${PLATFORMS[@]}"; do
-        echo -e "${YELLOW}  Downloading opencode-${platform}.zip...${NC}"
-        curl -sL "https://github.com/sst/opencode/releases/download/v${LATEST_VERSION}/opencode-${platform}.zip" -o "/tmp/opencode-${platform}.zip"
-        HASH=$(nix hash file --type sha256 --sri "/tmp/opencode-${platform}.zip")
+        # Linux uses tar.gz, Darwin uses zip
+        if [[ $platform == linux-* ]]; then
+            EXT="tar.gz"
+        else
+            EXT="zip"
+        fi
+        
+        echo -e "${YELLOW}  Downloading opencode-${platform}.${EXT}...${NC}"
+        curl -sL "https://github.com/sst/opencode/releases/download/v${LATEST_VERSION}/opencode-${platform}.${EXT}" -o "/tmp/opencode-${platform}.${EXT}"
+        HASH=$(nix hash file --type sha256 --sri "/tmp/opencode-${platform}.${EXT}")
         HASHES[$platform]=$HASH
         echo -e "${GREEN}  ${platform}: ${HASH}${NC}"
-        rm "/tmp/opencode-${platform}.zip"
+        rm "/tmp/opencode-${platform}.${EXT}"
     done
     
     # Update hashes in package.nix
