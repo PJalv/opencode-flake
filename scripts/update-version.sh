@@ -8,7 +8,7 @@ NC='\033[0m'
 
 echo -e "${YELLOW}Fetching latest OpenCode version from GitHub...${NC}"
 
-LATEST_VERSION=$(curl -s https://api.github.com/repos/sst/opencode/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+LATEST_VERSION=$(curl -sL https://api.github.com/repos/sst/opencode/releases/latest | jq -r '.tag_name' | sed 's/^v//')
 echo -e "${GREEN}Latest OpenCode version: ${LATEST_VERSION}${NC}"
 
 CURRENT_VERSION=$(grep -Po '(?<=version = ")[^"]+' package.nix | head -1)
