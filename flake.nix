@@ -61,15 +61,14 @@
          }
        );
 
-        checks = forEachSystem (
-          { pkgs, system }:
-          {
-            opencode = self.packages.${system}.opencode;
-            openspec = self.packages.${system}.openspec;
-            openspec-version = self.packages.${system}.openspec.passthru.tests.version;
-            opencode-nvim = self.packages.${system}.opencode-nvim;
-            opencode-google-antigravity-auth = self.packages.${system}.opencode-google-antigravity-auth;
-          }
-        );
+         checks = forEachSystem (
+           { pkgs, system }:
+           {
+             opencode = self.packages.${system}.opencode;
+             openspec = self.packages.${system}.openspec;
+             opencode-nvim = self.packages.${system}.opencode-nvim;
+             opencode-google-antigravity-auth = self.packages.${system}.opencode-google-antigravity-auth;
+           }
+         );
     };
 }

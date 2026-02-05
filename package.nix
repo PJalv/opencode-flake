@@ -12,7 +12,7 @@
 }:
 
 let
-  version = "1.1.49";
+  version = "1.1.52";
   
   # Map Nix system to OpenCode platform naming
   platformMap = {
@@ -36,10 +36,10 @@ let
 
   # Platform-specific hashes for the pre-built binaries
   hashes = {
-    "x86_64-linux" = "sha256-gq6xFQb+DIShDV6VWoGLGiNwrbEG0Moq3b8/Hs6z6HA=";
-    "aarch64-linux" = "sha256-2ZVo7d97dFWp0z4eJq4YPYHfqRBcg3h1tLEwGcMAnH0=";
-    "x86_64-darwin" = "sha256-R0flBAJjnqDJ/JQ5Ii0fZg+PCo/PF+6nfdAzW18cEtk=";
-    "aarch64-darwin" = "sha256-2oQwj1dSDJ8j2nT4ln3hreKLDB6g4D1jt7JNBnAZExk=";
+    "x86_64-linux" = "sha256-0vQCzxndaw0ySPvISGCTRQdfv0lWybdeWVepMNIK77g=";
+    "aarch64-linux" = "sha256-JGjfBNx3Jcqqs08/x5TZNMKEmDDAqbtm0gD3kAnFJU0=";
+    "x86_64-darwin" = "sha256-E9ZWtWHjSssF3Nu12HDYGNb4Ntj2a4NZd2UMqJucZE8=";
+    "aarch64-darwin" = "sha256-cuPLSI5hfL5SWOhIxY//RHWZcF2r4sGDBqX9eeYUl4s=";
   };
 
   # File extension varies by platform (tar.gz for Linux, zip for Darwin)
