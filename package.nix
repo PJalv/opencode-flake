@@ -12,7 +12,7 @@
 }:
 
 let
-  version = "1.1.59";
+  version = "1.2.4";
   
   # Map Nix system to OpenCode platform naming
   platformMap = {
@@ -36,10 +36,10 @@ let
 
   # Platform-specific hashes for the pre-built binaries
   hashes = {
-    "x86_64-linux" = "sha256-ZSNLEyiCSQbQ8nxT3yugjjSAg989sDbMEEzOtBm9dEM=";
-    "aarch64-linux" = "sha256-KgO9k8SIEFkS+fr2RiSxsxFFPKZHppRknkin9yPT888=";
-    "x86_64-darwin" = "sha256-h0KpYJA/d6FW1r/kAHSicEuhqxkHaI9jg0NHfTcQMDg=";
-    "aarch64-darwin" = "sha256-AgHnoiajKAfsNsxGg+E1UrBL29N5gLY7opiQJ0ZWchU=";
+    "x86_64-linux" = "sha256-6t6BRVKkb8JTqJDrGOeJhS+TgyvXjnBguwjpHDCg0j8=";
+    "aarch64-linux" = "sha256-VB55+czYaHZ/JdmjlVJeOMS0ldZhrxUKOoalI2DE4PY=";
+    "x86_64-darwin" = "sha256-4NgGt3bNoRdBtozMhTyHu1rZ3Ll0zJEv2xGh+0Hc6vo=";
+    "aarch64-darwin" = "sha256-fkPYZnkBZrVepP95uAkEq0vfZnfnX1Cb9DaO+CdyFe8=";
   };
 
   # File extension varies by platform (tar.gz for Linux, zip for Darwin)
@@ -55,7 +55,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/sst/opencode/releases/download/v${version}/opencode-${platformInfo.platform}-${platformInfo.arch}.${fileExt}";
+    url = "https://github.com/anomalyco/opencode/releases/download/v${version}/opencode-${platformInfo.platform}-${platformInfo.arch}.${fileExt}";
     inherit hash;
   };
 
@@ -117,7 +117,7 @@ WRAPPER
       It combines TypeScript/JavaScript with native UI components
       to provide an interactive AI coding experience.
     '';
-    homepage = "https://github.com/sst/opencode";
+    homepage = "https://github.com/anomalyco/opencode";
     license = lib.licenses.mit;
     platforms = [
       "x86_64-linux"
