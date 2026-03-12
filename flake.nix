@@ -1,4 +1,5 @@
 {
+  # Quick comment
   description = "OpenCode - A powerful terminal-based AI assistant for developers";
 
   inputs = {
@@ -29,6 +30,15 @@
         { pkgs, system }:
         {
           opencode = pkgs.callPackage ./package.nix { };
+          opencode-webui-permission-patched =
+            pkgs.opencode.overrideAttrs (oldAttrs: {
+              postPatch = (oldAttrs.postPatch or "") + ''
+                if [ -f packages/app/src/pages/session.tsx ]; then
+                  substituteInPlace packages/app/src/pages/session.tsx \
+                    --replace "if (next.tool) return;" ""
+                fi
+              '';
+            });
           openspec = pkgs.callPackage ./openspec.nix { };
           opencode-nvim = pkgs.callPackage ./opencode-nvim.nix { };
           opencode-google-antigravity-auth = pkgs.callPackage ./opencode-google-antigravity-auth.nix { };
@@ -42,6 +52,10 @@
           opencode = {
             type = "app";
             program = "${self.packages.${system}.opencode}/bin/opencode";
+          };
+          opencode-webui-permission-patched = {
+            type = "app";
+            program = "${self.packages.${system}.opencode-webui-permission-patched}/bin/opencode";
           };
           default = self.apps.${system}.opencode;
         }

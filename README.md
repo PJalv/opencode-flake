@@ -4,6 +4,8 @@ This repository packages [OpenCode](https://github.com/sst/opencode), a terminal
 
 This flake automatically stays up-to-date with the latest OpenCode releases through automated workflows that run every 6 hours.
 
+**Last Updated:** March 1, 2026
+
 ## Quick Start
 
 ```bash
