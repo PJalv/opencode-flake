@@ -12,35 +12,35 @@
 }:
 
 let
-  version = "1.2.24";
-  
-  # Map Nix system to OpenCode platform naming
-  platformMap = {
-    "x86_64-linux" = {
-      platform = "linux";
-      arch = "x64";
+    version = "1.2.27";
+    
+    # Map Nix system to OpenCode platform naming
+    platformMap = {
+      "x86_64-linux" = {
+        platform = "linux";
+        arch = "x64";
+      };
+      "aarch64-linux" = {
+        platform = "linux";
+        arch = "arm64";
+      };
+      "x86_64-darwin" = {
+        platform = "darwin";
+        arch = "x64";
+      };
+      "aarch64-darwin" = {
+        platform = "darwin";
+        arch = "arm64";
+      };
     };
-    "aarch64-linux" = {
-      platform = "linux";
-      arch = "arm64";
+    
+    # Platform-specific hashes for the pre-built binaries
+    hashes = {
+      "x86_64-linux" = "sha256-b+OCCxRYV/f/UH0oJgWLes8fzoJY3vFJhGjdQ4Ceaeg=";
+      "aarch64-linux" = "sha256-vNkaPr6UgP+xcC5ccRaNRRFQQhrMmcbRq/XtxeLLOfU=";
+      "x86_64-darwin" = "sha256-/HGdsnrLyBf/Kk3yu6p4jgKXbdwmqWyE3k/b5mNxS4w=";
+      "aarch64-darwin" = "sha256-+mgPp5CGx1CdOiwh5JySZLgD2nwPG3gH7YQrjjcyVZc=";
     };
-    "x86_64-darwin" = {
-      platform = "darwin";
-      arch = "x64";
-    };
-    "aarch64-darwin" = {
-      platform = "darwin";
-      arch = "arm64";
-    };
-  };
-
-  # Platform-specific hashes for the pre-built binaries
-  hashes = {
-    "x86_64-linux" = "sha256-IGRO9rhZdfC0nD6hMcjUnN7oVEGbO4z7JEduAXh6hx4=";
-    "aarch64-linux" = "sha256-WFB7mMKQL9gZudJjlZTuxPNuVwjxFLoCixw+h3u15H0=";
-    "x86_64-darwin" = "sha256-TeRmLSCog02Pk+RZZf9fq/vA9p8V60uzPwdC7O1U4gM=";
-    "aarch64-darwin" = "sha256-hYRnFVlDwQMIFQR8vaL9UHTRupMJoA5d1FhaGbPEiW4=";
-  };
 
   # File extension varies by platform (tar.gz for Linux, zip for Darwin)
   fileExt = if stdenvNoCC.hostPlatform.isLinux then "tar.gz" else "zip";
