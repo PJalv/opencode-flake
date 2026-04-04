@@ -4,10 +4,13 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    opencode.url = "github:anomalyco/opencode/v1.3.14";
+    opencode-tps-patch.url = "github:guard22/opencode-tps-meter/main";
+    opencode-tps-patch.flake = false;
   };
 
   outputs =
-    { self, nixpkgs }:
+    { self, nixpkgs, opencode, opencode-tps-patch, ... }:
     let
       systems = [
         "aarch64-darwin"
@@ -28,6 +31,12 @@
     {
       packages = forEachSystem (
         { pkgs, system }:
+        let
+          tpsPatch = pkgs.fetchpatch {
+            url = "https://raw.githubusercontent.com/guard22/opencode-tps-meter/main/patches/opencode-1.3.14-tps.patch";
+            hash = "sha256-VYCIefxvDlG0WC1r6IReFVz7NDFSgNN0jMbJSxKMXZU=";
+          };
+        in
         {
           opencode = pkgs.callPackage ./package.nix { };
           opencode-webui-permission-patched =
@@ -38,6 +47,21 @@
                     --replace "if (next.tool) return;" ""
                 fi
               '';
+            });
+          opencode-tps-meter =
+            let
+              upstream = opencode.packages.${system}.opencode;
+            in
+            upstream.overrideAttrs (oldAttrs: {
+              pname = "opencode-tps-meter";
+              patches = (oldAttrs.patches or [ ]) ++ [ tpsPatch ];
+              postPatch =
+                (oldAttrs.postPatch or "")
+                + ''
+                  substituteInPlace packages/opencode/src/installation/meta.ts \
+                    --replace-fail '"1.3.14"' '"${oldAttrs.version or "1.3.14"}"' \
+                    --replace-fail '"latest"' '"local"'
+                '';
             });
           openspec = pkgs.callPackage ./openspec.nix { };
           opencode-nvim = pkgs.callPackage ./opencode-nvim.nix { };
@@ -57,6 +81,10 @@
             type = "app";
             program = "${self.packages.${system}.opencode-webui-permission-patched}/bin/opencode";
           };
+          opencode-tps-meter = {
+            type = "app";
+            program = "${self.packages.${system}.opencode-tps-meter}/bin/opencode";
+          };
           default = self.apps.${system}.opencode;
         }
       );
@@ -66,10 +94,11 @@
          {
            default = pkgs.mkShell {
              buildInputs = with pkgs; [
-               self.packages.${system}.opencode
-               self.packages.${system}.openspec
-               self.packages.${system}.opencode-nvim
-               self.packages.${system}.opencode-google-antigravity-auth
+                self.packages.${system}.opencode
+                self.packages.${system}.openspec
+                self.packages.${system}.opencode-nvim
+                self.packages.${system}.opencode-google-antigravity-auth
+                self.packages.${system}.opencode-tps-meter
              ];
            };
          }
