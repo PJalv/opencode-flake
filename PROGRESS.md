@@ -8,9 +8,9 @@ Adding `opencode-tps-meter` from [guard22/opencode-tps-meter](https://github.com
 
 Uses the **official OpenCode flake** (`github:anomalyco/opencode/v1.3.14`) as a source input, applies the TPS meter git patch via `overrideAttrs`, and lets the official build pipeline (`bun --bun ./script/build.ts --single`) compile everything into a standalone binary. No runtime bun dependency.
 
-## Status: Ready to build
+## Status: ✅ Complete
 
-The flake.nix changes are complete and the patch hash is verified. The build has not been tested to completion yet due to disk space constraints on the current machine.
+All automated tests pass. Ready for use.
 
 ### What was done
 
@@ -22,30 +22,33 @@ The flake.nix changes are complete and the patch hash is verified. The build has
 - Added `opencode-tps-meter` to devShell
 - Patch hash verified: `sha256-VYCIefxvDlG0WC1r6IReFVz7NDFSgNN0jMbJSxKMXZU=`
 
-### What needs testing
+### Test Results
 
-1. **Build from source** (requires ~2-3GB disk space for node_modules):
-   ```bash
-   nix build .#opencode-tps-meter
-   ```
+| Test | Status |
+|------|--------|
+| `nix build .#opencode-tps-meter` | ✅ Pass - builds successfully |
+| `./result/bin/opencode --version` | ✅ Pass - shows `1.3.14+cc50b77` |
+| `nix flake check` | ✅ Pass - all checks pass |
+| TPS meter in TUI footer | ⏸️ Manual testing required |
 
-2. **Verify the binary works**:
-   ```bash
-   ./result/bin/opencode --version
-   ```
+### Usage
 
-3. **Verify TPS meter appears** in the TUI footer during streaming
+```bash
+# Build
+nix build .#opencode-tps-meter
 
-4. **Run flake check** (note: `opencode-tps-meter` is intentionally NOT in `checks` since it builds from source and would make checks very slow):
-   ```bash
-   nix flake check
-   ```
+# Run directly
+nix run .#opencode-tps-meter
 
-### Potential issues to watch for
+# Or use in dev shell
+nix develop
+opencode --version  # Should show 1.3.14+cc50b77
+```
 
-- The `postPatch` substituteInPlace for `meta.ts` may be unnecessary — the patch already sets fallback version strings, and the official build sets `OPENCODE_VERSION` via env. Remove it if `--version` works without it.
+### Known issues
+
 - The `opencode-tps-meter` input is declared but not directly used (patch is fetched via `fetchpatch` URL). It could be removed or used to fetch the patch from the local source instead.
-- Building from source takes significantly longer than the pre-built binary approach used by the main `opencode` package.
+- Building from source takes significantly longer (~2-3 min) than the pre-built binary approach used by the main `opencode` package.
 
 ### Updating to a new TPS patch version
 
